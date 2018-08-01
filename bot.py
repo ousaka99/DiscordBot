@@ -6,7 +6,7 @@ import random
 config = configparser.ConfigParser()
 config.read('./setting.conf', encoding="utf-8_sig")
 config_bot_token = config['default']['bot_token']
-config_channel_id = config['default']['channel_id']
+config_channel_ids = config['default']['channel_id'].split()
 config_command_tier = config['default']['command_tier']
 client = discord.Client()
 
@@ -21,7 +21,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user or message.channel.id != config_channel_id:
+    if (message.author == client.user) or (message.channel.id not in config_channel_ids):
         return
 
     # Tier選択コマンド
