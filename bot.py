@@ -10,6 +10,7 @@ config_bot_token = config['default']['bot_token']
 config_channel_ids = config['default']['channel_id'].split()
 config_command_tier = config['default']['command_tier']
 config_command_ship = config['default']['command_ship']
+config_command_choice = config['default']['command_choice']
 client = discord.Client()
 
 
@@ -26,7 +27,6 @@ async def on_message(message):
     if (message.author == client.user) or (message.channel.id not in config_channel_ids):
         return
 
-    # Tier選択コマンド
     if message.content.startswith(config_command_tier):
         if message.author.voice_channel is None:
             msg = f'すみません。{config_command_tier}はボイスチャンネルに入っている人しか使えないコマンドです。'
@@ -143,6 +143,33 @@ async def on_message(message):
             msg = f'すみません。よく分かりませんでした。' + \
                 f'```' + \
                 f'例）{config_command_ship}<半角スペース>最小Tier<半角スペース>最大Tier(<半角スペース>リクエスト回数やCV、BB、CA、DD指定など)' + \
+                f'```'
+            await client.send_message(message.channel, msg)
+            return
+
+    elif message.content.startswith(config_command_choice):
+        if message.author.voice_channel is None:
+            msg = f'すみません。{config_command_choice}はボイスチャンネルに入っている人しか使えないコマンドです。'
+            await client.send_message(message.channel, msg)
+            return
+
+        params = message.content.split()
+        if len(params) >= 2:
+            choices = []
+            for i, param in enumerate(params):
+                if i < 1:
+                    continue
+                else:
+                    choices.append(param)
+
+            choice = random.choice(choices)
+            msg = f'{choice}がいいと思います。\n' + \
+                  f'from {message.author.voice_channel.name}'
+            await client.send_message(message.channel, msg)
+        else:
+            msg = f'すみません。よく分かりませんでした。' + \
+                f'```' + \
+                f'例）{config_command_choice}<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
                 f'```'
             await client.send_message(message.channel, msg)
             return
