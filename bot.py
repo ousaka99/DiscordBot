@@ -1,6 +1,7 @@
 import configparser
 import discord
 import random
+import json
 
 # setting
 config = configparser.ConfigParser()
@@ -8,6 +9,7 @@ config.read('./setting.conf', encoding="utf-8_sig")
 config_bot_token = config['default']['bot_token']
 config_channel_ids = config['default']['channel_id'].split()
 config_command_tier = config['default']['command_tier']
+config_command_ship = config['default']['command_ship']
 client = discord.Client()
 
 
@@ -46,7 +48,7 @@ async def on_message(message):
             tiers = list(range(min_tier, max_tier + 1))
             tier = random.choice(tiers)
             msg = f'Tier{tier} がいいと思います。\n' + \
-                f'from {message.author}@{message.author.voice_channel.name}'
+                f'from {message.author.voice_channel.name}'
             await client.send_message(message.channel, msg)
         else:
             msg = f'すみません。よく分かりませんでした。' + \
@@ -54,12 +56,95 @@ async def on_message(message):
                 f'例）{config_command_tier}<半角スペース>最小Tier<半角スペース>最大Tier' + \
                 f'```'
             await client.send_message(message.channel, msg)
+            return
 
-    # for server in client.servers:
-    #     for channel in server.channels:
-    #         # print(f'channel type={channel.type}, name={channel.name}, id={channel.id}')
-    #         if channel.type == discord.ChannelType.voice:
-    #             for member in channel.voice_members:
-    #                 print(f'voice channel={channel.name}, member={member}')
+    elif message.content.startswith(config_command_ship):
+        if message.author.voice_channel is None:
+            msg = f'すみません。{config_command_ship}はボイスチャンネルに入っている人しか使えないコマンドです。'
+            await client.send_message(message.channel, msg)
+            return
+
+        params = message.content.split()
+        min_tier = -1
+        max_tier = -1
+        request_count = 1
+        kinds = []
+        if len(params) >= 3:
+            try:
+                min_tier = int(params[1])
+                max_tier = int(params[2])
+            except ValueError:
+                # PythonにはTryParseが無いため、実際にキャストしてみる(エラーは握り潰し)
+                print(f'message={message.content}')
+
+        if len(params) >= 4:
+            options = []
+            for i, param in enumerate(params):
+                if i < 3:
+                    continue
+                else:
+                    options.append(param)
+            for option in options:
+                try:
+                    request_count = int(option)
+                except ValueError:
+                    # PythonにはTryParseが無いため、実際にキャストしてみる(エラーは握り潰し)
+                    request_count = request_count
+
+            for option in options:
+                if 'CV' in option:
+                    kinds.append('空母')
+                if 'BB' in option:
+                    kinds.append('戦艦')
+                if 'CA' in option:
+                    kinds.append('巡洋')
+                if 'DD' in option:
+                    kinds.append('駆逐')
+
+        if request_count > 10:
+            msg = f'すみません。欲張りすぎです。もうちょっと少なくしてください。'
+            await client.send_message(message.channel, msg)
+            return
+
+        if (1 <= min_tier <= 10) and (1 <= max_tier <= 10) and min_tier <= max_tier:
+            table_data = {}
+            try:
+                with open('./ship_table.json', 'r', encoding="utf-8_sig") as fc:
+                    table_data = json.load(fc)
+            except json.JSONDecodeError as e:
+                print('JSONDecodeError: ', e)
+                exit(e)
+            except FileNotFoundError as e:
+                print('FileNotFoundError: ', e)
+                exit(e)
+
+            if len(kinds) > 0:
+                # 艦種指定あり
+                target_table_data = [x for x in table_data['ships'] if min_tier <= int(x['tier']) <= max_tier and x['kind'] in kinds]
+            else:
+                target_table_data = [x for x in table_data['ships'] if min_tier <= int(x['tier']) <= max_tier]
+
+            if len(target_table_data) < 1:
+                msg = f'すみません。おすすめを見つけることができませんでした。'
+                await client.send_message(message.channel, msg)
+                return
+
+            ships = []
+            for i in range(request_count):
+                x = random.choice(target_table_data)
+                name = x['name']
+                tier = x['tier']
+                ships.append(f'{name}(Tier{tier}) がいいと思います。')
+
+            msg = '\n'.join(ships) + '\n' + \
+                f'from {message.author.voice_channel.name}'
+            await client.send_message(message.channel, msg)
+        else:
+            msg = f'すみません。よく分かりませんでした。' + \
+                f'```' + \
+                f'例）{config_command_ship}<半角スペース>最小Tier<半角スペース>最大Tier(<半角スペース>リクエスト回数やCV、BB、CA、DD指定など)' + \
+                f'```'
+            await client.send_message(message.channel, msg)
+            return
 
 client.run(config_bot_token)
