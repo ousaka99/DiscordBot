@@ -11,6 +11,7 @@ config_channel_ids = config['default']['channel_id'].split()
 config_command_tier = config['default']['command_tier']
 config_command_ship = config['default']['command_ship']
 config_command_choice = config['default']['command_choice']
+config_command_pickup = config['default']['command_pickup']
 client = discord.Client()
 
 
@@ -170,6 +171,42 @@ async def on_message(message):
             msg = f'すみません。よく分かりませんでした。' + \
                 f'```' + \
                 f'例）{config_command_choice}<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
+                f'```'
+            await client.send_message(message.channel, msg)
+            return
+
+    elif message.content.startswith(config_command_pickup):
+        if message.author.voice_channel is None:
+            msg = f'すみません。{config_command_pickup}はボイスチャンネルに入っている人しか使えないコマンドです。'
+            await client.send_message(message.channel, msg)
+            return
+
+        params = message.content.split()
+        pickup_count = -1
+        if len(params) >= 2:
+            try:
+                pickup_count = int(params[1])
+            except ValueError:
+                # PythonにはTryParseが無いため、実際にキャストしてみる(エラーは握り潰し)
+                print(f'message={message.content}')
+
+        if len(params) >= 3:
+            choices = []
+            for i, param in enumerate(params):
+                if i < 2:
+                    continue
+                else:
+                    choices.append(param)
+
+        if 0 < pickup_count < len(choices):
+            pickups = random.sample(choices, pickup_count)
+            msg = '\n'.join(pickups) + '\nがいいと思います。' + \
+                f'from {message.author.voice_channel.name}'
+            await client.send_message(message.channel, msg)
+        else:
+            msg = f'すみません。よく分かりませんでした。' + \
+                f'```' + \
+                f'例）{config_command_pickup}<半角スペース>選択数<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
                 f'```'
             await client.send_message(message.channel, msg)
             return
