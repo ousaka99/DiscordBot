@@ -43,7 +43,7 @@ async def on_message(message):
                 max_tier = int(params[2])
             except ValueError:
                 # PythonにはTryParseが無いため、実際にキャストしてみる(エラーは握り潰し)
-                print(f'message={message.content}')
+                pass
 
         if (1 <= min_tier <= 10) and (1 <= max_tier <= 10) and min_tier <= max_tier:
             tiers = list(range(min_tier, max_tier + 1))
@@ -76,21 +76,17 @@ async def on_message(message):
                 max_tier = int(params[2])
             except ValueError:
                 # PythonにはTryParseが無いため、実際にキャストしてみる(エラーは握り潰し)
-                print(f'message={message.content}')
+                pass
 
         if len(params) >= 4:
-            options = []
-            for i, param in enumerate(params):
-                if i < 3:
-                    continue
-                else:
-                    options.append(param)
+            options = params[3:]
+
             for option in options:
                 try:
                     request_count = int(option)
                 except ValueError:
                     # PythonにはTryParseが無いため、実際にキャストしてみる(エラーは握り潰し)
-                    request_count = request_count
+                    pass
 
             for option in options:
                 if 'CV' in option:
@@ -102,12 +98,12 @@ async def on_message(message):
                 if 'DD' in option:
                     kinds.append('駆逐')
 
-        if request_count > 10:
+        if request_count > 20:
             msg = f'すみません。欲張りすぎです。もうちょっと少なくしてください。'
             await client.send_message(message.channel, msg)
             return
 
-        if (1 <= min_tier <= 10) and (1 <= max_tier <= 10) and min_tier <= max_tier:
+        if (1 <= min_tier <= 10) and (1 <= max_tier <= 10) and min_tier <= max_tier and 0 < request_count:
             table_data = {}
             try:
                 with open('./ship_table.json', 'r', encoding="utf-8_sig") as fc:
@@ -131,13 +127,15 @@ async def on_message(message):
                 return
 
             ships = []
-            for i in range(request_count):
-                x = random.choice(target_table_data)
+            if len(target_table_data) < request_count:
+                request_count = len(target_table_data)
+            samples = random.sample(target_table_data, request_count)
+            for x in samples:
                 name = x['name']
                 tier = x['tier']
-                ships.append(f'{name}(Tier{tier}) がいいと思います。')
+                ships.append(f'{name}(Tier{tier})')
 
-            msg = '\n'.join(ships) + '\n' + \
+            msg = '\n'.join(ships) + '\nがいいと思います。' + \
                 f'from {message.author.voice_channel.name}'
             await client.send_message(message.channel, msg)
         else:
@@ -156,12 +154,7 @@ async def on_message(message):
 
         params = message.content.split()
         if len(params) >= 2:
-            choices = []
-            for i, param in enumerate(params):
-                if i < 1:
-                    continue
-                else:
-                    choices.append(param)
+            choices = params[1:]
 
             choice = random.choice(choices)
             msg = f'{choice}がいいと思います。\n' + \
@@ -188,17 +181,12 @@ async def on_message(message):
                 pickup_count = int(params[1])
             except ValueError:
                 # PythonにはTryParseが無いため、実際にキャストしてみる(エラーは握り潰し)
-                print(f'message={message.content}')
+                pass
 
         if len(params) >= 3:
-            choices = []
-            for i, param in enumerate(params):
-                if i < 2:
-                    continue
-                else:
-                    choices.append(param)
+            choices = params[2:]
 
-        if 0 < pickup_count < len(choices):
+        if 0 < pickup_count <= len(choices):
             pickups = random.sample(choices, pickup_count)
             msg = '\n'.join(pickups) + '\nがいいと思います。' + \
                 f'from {message.author.voice_channel.name}'

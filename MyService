@@ -1,0 +1,58 @@
+#!/bin/bash
+# chkconfig: 2345 99 10
+# description: DiscordBot(MyService) starting shell
+
+export LANG='ja_JP.UTF-8'
+export LC_ALL='ja_JP.UTF-8'
+export LC_MESSAGES='ja_JP.UTF-8'
+
+export PYENV_ROOT="/home/ec2-user/.pyenv"
+if [ -d "${PYENV_ROOT}" ]; then
+export PATH=${PYENV_ROOT}/bin:$PATH
+eval "$(pyenv init -)"
+fi
+
+SERVICE=MyService
+USER=ec2-user
+DIR=/home/ec2-user/DiscordBot/
+FILE=bot.py
+COMMAND="python3 $DIR$FILE"
+start() {
+    cd $DIR
+    $COMMAND 2>> error.log 1> /dev/null &
+    echo "service $SERVICE [start]"
+}
+stop() {
+    pkill -f $DIR$FILE
+    echo "service $SERVICE [stop]"
+}
+status() {
+    PID=`pgrep -f $DIR$FILE | wc -l`
+    if [ $PID -eq 0 ]; then
+        echo "$SERVICE stop"
+    else
+        echo "running $SERVICE ..."
+    fi
+}
+
+
+case $1 in
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+status)
+    status
+    ;;
+restart)
+    stop
+    sleep 1
+    start
+    ;;
+*)
+    echo "Usage: $SERVICE [start|stop|restart|status]"
+    ;;
+esac
+exit 0
