@@ -14,8 +14,8 @@ config_command_choice = config['default']['command_choice']
 config_command_pickup = config['default']['command_pickup']
 commands = [config_command_tier, config_command_ship, config_command_choice, config_command_pickup]
 client = discord.Client()
-
 commandUsers = []
+
 
 @client.event
 async def on_ready():
@@ -46,6 +46,13 @@ async def on_message(message):
                     await client.send_message(message.channel, msg)
                     return
 
+    if message.author.voice_channel is None:
+        voice_channel_name = 'None'
+    else:
+        voice_channel_name = message.author.voice_channel.name
+
+    print(voice_channel_name)
+
     if message.content.startswith(config_command_tier):
         params = message.content.split()
         min_tier = -1
@@ -62,7 +69,7 @@ async def on_message(message):
             tiers = list(range(min_tier, max_tier + 1))
             tier = random.choice(tiers)
             msg = f'Tier{tier} がいいと思います。\n' + \
-                f'from {message.author.voice_channel.name}'
+                f'from {voice_channel_name}'
             await client.send_message(message.channel, msg)
         else:
             msg = f'すみません。よく分かりませんでした。' + \
@@ -144,7 +151,7 @@ async def on_message(message):
                 ships.append(f'{name}(Tier{tier})')
 
             msg = '\n'.join(ships) + '\nがいいと思います。' + \
-                f'from {message.author.voice_channel.name}'
+                f'from {voice_channel_name}'
             await client.send_message(message.channel, msg)
         else:
             msg = f'すみません。よく分かりませんでした。' + \
@@ -161,7 +168,7 @@ async def on_message(message):
 
             choice = random.choice(choices)
             msg = f'{choice}がいいと思います。\n' + \
-                  f'from {message.author.voice_channel.name}'
+                  f'from {voice_channel_name}'
             await client.send_message(message.channel, msg)
         else:
             msg = f'すみません。よく分かりませんでした。' + \
@@ -187,7 +194,7 @@ async def on_message(message):
         if 0 < pickup_count <= len(choices):
             pickups = random.sample(choices, pickup_count)
             msg = '\n'.join(pickups) + '\nがいいと思います。' + \
-                f'from {message.author.voice_channel.name}'
+                f'from {voice_channel_name}'
             await client.send_message(message.channel, msg)
         else:
             msg = f'すみません。よく分かりませんでした。' + \
