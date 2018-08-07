@@ -31,7 +31,8 @@ async def on_message(message):
         return
 
     global commandUsers
-    commandUsers = commandUsers[0:1]
+    if len(commandUsers) > 1:
+        commandUsers.pop(0)
 
     for command in commands:
         if message.content.startswith(command):
@@ -50,8 +51,6 @@ async def on_message(message):
         voice_channel_name = 'None'
     else:
         voice_channel_name = message.author.voice_channel.name
-
-    print(voice_channel_name)
 
     if message.content.startswith(config_command_tier):
         params = message.content.split()
