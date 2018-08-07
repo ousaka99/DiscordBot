@@ -12,8 +12,10 @@ config_command_tier = config['default']['command_tier']
 config_command_ship = config['default']['command_ship']
 config_command_choice = config['default']['command_choice']
 config_command_pickup = config['default']['command_pickup']
+commands = [config_command_tier, config_command_ship, config_command_choice, config_command_pickup]
 client = discord.Client()
 
+commandUsers = []
 
 @client.event
 async def on_ready():
@@ -28,12 +30,23 @@ async def on_message(message):
     if (message.author == client.user) or (message.channel.id not in config_channel_ids):
         return
 
-    if message.content.startswith(config_command_tier):
-        if message.author.voice_channel is None:
-            msg = f'すみません。{config_command_tier}はボイスチャンネルに入っている人しか使えないコマンドです。'
-            await client.send_message(message.channel, msg)
-            return
+    global commandUsers
+    commandUsers = commandUsers[0:1]
 
+    for command in commands:
+        if message.content.startswith(command):
+            if message.author.voice_channel is None:
+                if message.author not in commandUsers:
+                    msg = f'すみません。よく聞き取れませんでした。ボイスチャンネルに入っていただけるとよく聞こえるのですが、、、'
+                    await client.send_message(message.channel, msg)
+                    commandUsers.append(message.author)
+                    return
+                elif 0 == random.choice(range(2)):
+                    msg = f'すみません。よく聞き取れませんでした。もう一度お願いします。'
+                    await client.send_message(message.channel, msg)
+                    return
+
+    if message.content.startswith(config_command_tier):
         params = message.content.split()
         min_tier = -1
         max_tier = -1
@@ -60,11 +73,6 @@ async def on_message(message):
             return
 
     elif message.content.startswith(config_command_ship):
-        if message.author.voice_channel is None:
-            msg = f'すみません。{config_command_ship}はボイスチャンネルに入っている人しか使えないコマンドです。'
-            await client.send_message(message.channel, msg)
-            return
-
         params = message.content.split()
         min_tier = -1
         max_tier = -1
@@ -147,11 +155,6 @@ async def on_message(message):
             return
 
     elif message.content.startswith(config_command_choice):
-        if message.author.voice_channel is None:
-            msg = f'すみません。{config_command_choice}はボイスチャンネルに入っている人しか使えないコマンドです。'
-            await client.send_message(message.channel, msg)
-            return
-
         params = message.content.split()
         if len(params) >= 2:
             choices = params[1:]
@@ -169,11 +172,6 @@ async def on_message(message):
             return
 
     elif message.content.startswith(config_command_pickup):
-        if message.author.voice_channel is None:
-            msg = f'すみません。{config_command_pickup}はボイスチャンネルに入っている人しか使えないコマンドです。'
-            await client.send_message(message.channel, msg)
-            return
-
         params = message.content.split()
         pickup_count = -1
         if len(params) >= 2:
