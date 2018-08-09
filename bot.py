@@ -36,6 +36,11 @@ async def on_message(message):
         # 登録されているコマンド以外は無視する。
         return
 
+    if len(message.content) > 1900:
+        msg = f'すみません。少し長すぎます。短くしてください。'
+        await client.send_message(message.channel, msg)
+        return
+
     global commandUsers
     if message.author.voice_channel is None:
         if message.author not in commandUsers:
@@ -51,7 +56,7 @@ async def on_message(message):
             return
 
     if message.author.voice_channel is None:
-        voice_channel_name = 'None'
+        voice_channel_name = 'ボイスチャンネル未接続(聞き取れないことがあります)'
     else:
         voice_channel_name = message.author.voice_channel.name
 
