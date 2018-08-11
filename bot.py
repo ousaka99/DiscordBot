@@ -54,6 +54,9 @@ async def on_message(message):
     logger.info(message.content)
 
     global commandUsers
+    if len(commandUsers) > 2:
+        commandUsers.pop(0)
+
     if (message.channel.id not in config_special_channel_ids) and (message.author.voice_channel is None):
         if message.author not in commandUsers:
             if 0 == random.choice(range(2)):
@@ -67,8 +70,10 @@ async def on_message(message):
             await client.send_message(message.channel, msg)
             return
 
-    if message.author.voice_channel is None:
+    if (message.channel.id not in config_special_channel_ids) and (message.author.voice_channel is None):
         voice_channel_name = 'ボイスチャンネル未接続(聞き取れないことがあります)'
+    elif message.author.voice_channel is None:
+        voice_channel_name = 'None'
     else:
         voice_channel_name = message.author.voice_channel.name
 
