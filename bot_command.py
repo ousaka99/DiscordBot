@@ -8,7 +8,7 @@ class BotCommand:
         self.config = config
         pass
 
-    def bot_command_help(self, words):
+    def bot_command_help(self):
         msg = f'使用できるコマンドは\n'
         msg += '\n'.join(self.config.commands) + '\nです。'
         return msg
@@ -30,7 +30,9 @@ class BotCommand:
             if option.startswith("-c"):
                 comment = option[2:]
 
-        self.logger.debug(f'min_tier={min_tier},max_tier={max_tier},comment={comment}')
+        self.logger.debug(f'min_tier={min_tier},'
+                          f'max_tier={max_tier},'
+                          f'comment={comment}')
         if (1 <= min_tier <= 10) and (1 <= max_tier <= 10) and min_tier <= max_tier:
             tiers = list(range(min_tier, max_tier + 1))
             tier = random.choice(tiers)
@@ -52,7 +54,8 @@ class BotCommand:
         max_tier = -1
         options = []    # 変動
         request_count = 1
-        kinds = []
+        kinds = set()
+        nations = set()
         comment = ""
         if len(params) >= 2:
             try:
@@ -77,15 +80,42 @@ class BotCommand:
             if option.startswith("-c"):
                 comment = option[2:]
             if 'CV' in option:
-                kinds.append('空母')
+                kinds.add('空母')
             if 'BB' in option:
-                kinds.append('戦艦')
+                kinds.add('戦艦')
             if 'CA' in option:
-                kinds.append('巡洋')
+                kinds.add('巡洋')
             if 'DD' in option:
-                kinds.append('駆逐')
+                kinds.add('駆逐')
+            if '日' in option:
+                nations.add('日本')
+            if '米' in option:
+                nations.add('アメリカ')
+            if 'ソ' in option:
+                nations.add('ソ連')
+            if '独' in option:
+                nations.add('ドイツ')
+            if '英' in option:
+                nations.add('イギリス')
+            if '仏' in option:
+                nations.add('フランス')
+            if 'パ' in option:
+                nations.add('パンジア')
+            if '伊' in option:
+                nations.add('イタリア')
+            if '波' in option:
+                nations.add('ポーランド')
+            if 'イ' in option:
+                nations.add('イギリス連邦')
+            if 'ア' in option:
+                nations.add('パンアメリカ')
 
-        self.logger.debug(f'min_tier={min_tier},max_tier={max_tier},request_count={request_count},kinds={kinds},comment={comment}')
+        self.logger.debug(f'min_tier={min_tier},'
+                          f'max_tier={max_tier},'
+                          f'request_count={request_count},'
+                          f'kinds={kinds},'
+                          f'nations={nations},'
+                          f'comment={comment}')
         if request_count > 20:
             msg = f'すみません。欲張りすぎです。もうちょっと少なくしてください。'
             return msg
@@ -101,11 +131,11 @@ class BotCommand:
                 print('FileNotFoundError: ', e)
                 exit(e)
 
+            target_table_data = [x for x in table_data['ships'] if min_tier <= int(x['tier']) <= max_tier]
             if len(kinds) > 0:
-                # 艦種指定あり
-                target_table_data = [x for x in table_data['ships'] if min_tier <= int(x['tier']) <= max_tier and x['kind'] in kinds]
-            else:
-                target_table_data = [x for x in table_data['ships'] if min_tier <= int(x['tier']) <= max_tier]
+                target_table_data = [x for x in target_table_data if x['kind'] in kinds]
+            if len(nations) > 0:
+                target_table_data = [x for x in target_table_data if x['nation'] in nations]
 
             if len(target_table_data) < 1:
                 msg = f'すみません。おすすめを見つけることができませんでした。'
@@ -143,7 +173,8 @@ class BotCommand:
             else:
                 choices.append(option)
 
-        self.logger.debug(f'choices={choices},comment={comment}')
+        self.logger.debug(f'choices={choices},'
+                          f'comment={comment}')
         if len(choices) >= 1:
             choice = random.choice(choices)
             msg = ''
@@ -177,7 +208,9 @@ class BotCommand:
             else:
                 choices.append(option)
 
-        self.logger.debug(f'pickup_count={pickup_count},choices={choices},comment={comment}')
+        self.logger.debug(f'pickup_count={pickup_count},'
+                          f'choices={choices},'
+                          f'comment={comment}')
         if 0 < pickup_count <= len(choices):
             pickups = random.sample(choices, pickup_count)
             msg = ''
@@ -244,6 +277,7 @@ class BotCommand:
             for n in range(0, int(patterns[key])):
                 choices.append(key)
 
-        self.logger.debug(f'choices={choices},comment={comment}')
+        self.logger.debug(f'choices={choices},'
+                          f'comment={comment}')
         choice = random.choice(choices)
         return choice, comment

@@ -10,7 +10,7 @@ logger = logging.getLogger()
 config = bot_config.BotConfig()
 command = bot_command.BotCommand(logger, config)
 client = discord.Client()
-commandUsers = []
+authors = []
 # </editor-fold>
 
 
@@ -28,6 +28,12 @@ async def on_message(message):
         # 自分自身の発言や、登録されていないチャンネルの発言は無視する。
         return
 
+    global authors
+    if message.channel.id not in config.special_channel_ids:
+        if len(authors) >= 100:
+            authors = authors[1: 100]
+        authors.append(str(message.author))
+
     words = message.content.split()
     if words[0] not in config.commands:
         # 登録されているコマンド以外は無視する。
@@ -35,20 +41,21 @@ async def on_message(message):
 
     logger.info(message.content)
 
-    global commandUsers
-    if len(commandUsers) > 2:
-        commandUsers.pop(0)
-
     if (message.channel.id not in config.special_channel_ids) and (message.author.voice_channel is None):
-        if message.author not in commandUsers:
-            if 0 == random.choice(range(2)):
-                msg = f'すみません。今気づきました。続けてもう一度お願いします。ボイスチャンネルに入っていただけるとすぐ気づくのですが、、、'
-                commandUsers.append(message.author)
-                await client.send_message(message.channel, msg)
-                return
-        elif 0 == random.choice(range(4)):
-            msg = f'すみません。よく聞き取れませんでした。続けてもう一度お願いします。'
-            commandUsers.append(message.author)
+        my_authors = [x for x in authors if str(message.author) == x]
+        can_command = False
+        for x in range(0, len(my_authors)):
+            if 0 == random.choice(range(0, 2)):
+                # 50%の確率で実行不可
+                continue
+            else:
+                can_command = True
+                break
+
+        if can_command is False:
+            msg = f'すみません。よく聞き取れませんでした。続けてもう一度お願いします。\n' + \
+                  f'ボイスチャンネルに入っていただけると聞き洩らしません。\n' + \
+                  f'またテキストチャンネルに書き込むごとに聞きもらしにくくなります。'
             await client.send_message(message.channel, msg)
             return
 
@@ -62,7 +69,7 @@ async def on_message(message):
     return_message = ""
 
     if message.content.startswith(config.command_help):
-        return_message = command.bot_command_help(words)
+        return_message = command.bot_command_help()
     elif message.content.startswith(config.command_tier):
         return_message = command.bot_command_tier(words)
     elif message.content.startswith(config.command_ship):

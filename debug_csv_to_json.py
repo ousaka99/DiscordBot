@@ -36,5 +36,3 @@ with open('../ship_table.csv', 'r') as f:
 with codecs.open('./ship_table.json', 'w', encoding="utf-8_sig") as f:
     # JSONへの書き込み
     json.dump(json_data, f, ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
-
-
