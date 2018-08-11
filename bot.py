@@ -9,6 +9,10 @@ config = configparser.ConfigParser()
 config.read('./setting.conf', encoding="utf-8_sig")
 config_bot_token = config['default']['bot_token']
 config_channel_ids = config['default']['channel_id'].split()
+config_special_channel_ids = config['default']['special_channel_id'].split()
+config_all_channel_ids = []
+config_all_channel_ids.extend(config_channel_ids)
+config_all_channel_ids.extend(config_special_channel_ids)
 config_command_help = config['default']['command_help']
 config_command_tier = config['default']['command_tier']
 config_command_ship = config['default']['command_ship']
@@ -38,7 +42,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if (message.author == client.user) or (message.channel.id not in config_channel_ids):
+    if (message.author == client.user) or (message.channel.id not in config_all_channel_ids):
         # 自分自身の発言や、登録されていないチャンネルの発言は無視する。
         return
 
@@ -50,7 +54,7 @@ async def on_message(message):
     logger.info(message.content)
 
     global commandUsers
-    if message.author.voice_channel is None:
+    if (message.channel.id not in config_special_channel_ids) and (message.author.voice_channel is None):
         if message.author not in commandUsers:
             if 0 == random.choice(range(2)):
                 msg = f'すみません。今気づきました。続けてもう一度お願いします。ボイスチャンネルに入っていただけるとすぐ気づくのですが、、、'

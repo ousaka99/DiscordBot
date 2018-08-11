@@ -1,6 +1,7 @@
 ﻿[default]
 bot_token = 
 channel_id = 
+special_channel_id =
 command_help = !help
 command_tier = !tier
 command_ship = !ship
