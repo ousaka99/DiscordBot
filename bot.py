@@ -14,13 +14,13 @@ config_command_tier = config['default']['command_tier']
 config_command_ship = config['default']['command_ship']
 config_command_choice = config['default']['command_choice']
 config_command_pickup = config['default']['command_pickup']
-config_command_uranai = config['default']['command_uranai']
+config_command_luck = config['default']['command_luck']
 commands = [config_command_help,
             config_command_tier,
             config_command_ship,
             config_command_choice,
             config_command_pickup,
-            config_command_uranai]
+            config_command_luck]
 client = discord.Client()
 commandUsers = []
 logging.config.fileConfig("logging.conf")
@@ -244,7 +244,7 @@ async def on_message(message):
             else:
                 choices.append(option)
 
-        logger.debug(f'pickup_count={pickup_count},kinds={kinds},comment={comment}')
+        logger.debug(f'pickup_count={pickup_count},choices={choices},comment={comment}')
         if 0 < pickup_count <= len(choices):
             pickups = random.sample(choices, pickup_count)
             msg = ''
@@ -260,7 +260,7 @@ async def on_message(message):
                 f'```'
             return_message = msg
 
-    elif message.content.startswith(config_command_uranai):
+    elif message.content.startswith(config_command_luck):
         params = words[1:]
         options = params[0:]
         choices = []

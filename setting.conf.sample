@@ -6,4 +6,4 @@ command_tier = !tier
 command_ship = !ship
 command_choice = !choice
 command_pickup = !pickup
-command_uranai = !ura
+command_luck = !luck
