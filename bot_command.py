@@ -14,6 +14,23 @@ class BotCommand:
         return msg
 
     def bot_command_tier(self, words):
+        result = self.bot_command_tier_execute(words)
+        tier = result[0]
+        comment = result[1]
+
+        msg = ''
+        if tier is not None:
+            if len(comment) > 0:
+                msg = f"{comment}\n"
+            msg += f'Tier{tier} がいいと思います。'
+        else:
+            msg = f'すみません。よく分かりませんでした。' + \
+                f'```' + \
+                  f'例）{self.config.command_tier}<半角スペース>最小Tier<半角スペース>最大Tier' + \
+                  f'```'
+        return msg
+
+    def bot_command_tier_execute(self, words):
         params = words[1:]
         min_tier = -1
         max_tier = -1
@@ -36,19 +53,31 @@ class BotCommand:
         if (1 <= min_tier <= 10) and (1 <= max_tier <= 10) and min_tier <= max_tier:
             tiers = list(range(min_tier, max_tier + 1))
             tier = random.choice(tiers)
-            msg = ''
-            if len(comment) > 0:
-                msg = f"{comment}\n"
-            msg += f'Tier{tier} がいいと思います。'
-            return msg
         else:
-            msg = f'すみません。よく分かりませんでした。' + \
-                  f'```' + \
-                  f'例）{self.config.command_tier}<半角スペース>最小Tier<半角スペース>最大Tier' + \
-                  f'```'
-            return msg
+            tier = None
+
+        return tier, comment
 
     def bot_command_ship(self, words):
+        result = self.bot_command_ship_execute(words)
+        ships = result[0]
+        comment = result[1]
+
+        msg = ''
+        if ships is not None:
+            if len(ships) == 0:
+                msg = f'すみません。おすすめを見つけることができませんでした。'
+            elif len(comment) > 0:
+                msg = f"{comment}\n"
+            msg += '\n'.join(ships) + '\nがいいと思います。'
+        else:
+            msg = f'すみません。よく分かりませんでした。' + \
+                f'```' + \
+                f'例）{self.config.command_ship}<半角スペース>最小Tier<半角スペース>最大Tier(<半角スペース>リクエスト回数やCV、BB、CA、DD指定など)' + \
+                f'```'
+        return msg
+
+    def bot_command_ship_execute(self, words):
         params = words[1:]
         min_tier = -1
         max_tier = -1
@@ -138,8 +167,7 @@ class BotCommand:
                 target_table_data = [x for x in target_table_data if x['nation'] in nations]
 
             if len(target_table_data) < 1:
-                msg = f'すみません。おすすめを見つけることができませんでした。'
-                return msg
+                ships = []
             else:
                 ships = []
                 if len(target_table_data) < request_count:
@@ -149,19 +177,29 @@ class BotCommand:
                     name = x['name']
                     tier = x['tier']
                     ships.append(f'{name}(Tier{tier})')
-                msg = ''
-                if len(comment) > 0:
-                    msg = f"{comment}\n"
-                msg += '\n'.join(ships) + '\nがいいと思います。'
-                return msg
+        else:
+            ships = None
+
+        return ships, comment
+
+    def bot_command_choice(self, words):
+        result = self.bot_command_choice_execute(words)
+        choice = result[0]
+        comment = result[1]
+
+        msg = ''
+        if choice is not None:
+            if len(comment) > 0:
+                msg = f"{comment}\n"
+            msg += f'{choice} がいいと思います。'
         else:
             msg = f'すみません。よく分かりませんでした。' + \
                 f'```' + \
-                f'例）{self.config.command_ship}<半角スペース>最小Tier<半角スペース>最大Tier(<半角スペース>リクエスト回数やCV、BB、CA、DD指定など)' + \
+                f'例）{self.config.command_choice}<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
                 f'```'
-            return msg
+        return msg
 
-    def bot_command_choice(self, words):
+    def bot_command_choice_execute(self, words):
         params = words[1:]
         options = params[0:]
         choices = []
@@ -175,21 +213,32 @@ class BotCommand:
 
         self.logger.debug(f'choices={choices},'
                           f'comment={comment}')
+
         if len(choices) >= 1:
             choice = random.choice(choices)
-            msg = ''
+        else:
+            choice = None
+
+        return choice, comment
+
+    def bot_command_pickup(self, words):
+        result = self.bot_command_pickup_execute(words)
+        pickups = result[0]
+        comment = result[1]
+
+        msg = ''
+        if pickups is not None:
             if len(comment) > 0:
                 msg = f"{comment}\n"
-            msg += f'{choice} がいいと思います。'
-            return msg
+            msg += '\n'.join(pickups) + '\nがいいと思います。'
         else:
             msg = f'すみません。よく分かりませんでした。' + \
                 f'```' + \
-                f'例）{self.config.command_choice}<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
+                f'例）{self.config.command_pickup}<半角スペース>選択数<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
                 f'```'
-            return msg
+        return msg
 
-    def bot_command_pickup(self, words):
+    def bot_command_pickup_execute(self, words):
         params = words[1:]
         options = params[1:]
         pickup_count = -1
@@ -213,20 +262,12 @@ class BotCommand:
                           f'comment={comment}')
         if 0 < pickup_count <= len(choices):
             pickups = random.sample(choices, pickup_count)
-            msg = ''
-            if len(comment) > 0:
-                msg = f"{comment}\n"
-            msg += '\n'.join(pickups) + '\nがいいと思います。'
-            return msg
         else:
-            msg = f'すみません。よく分かりませんでした。' + \
-                f'```' + \
-                f'例）{self.config.command_pickup}<半角スペース>選択数<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
-                f'```'
-            return msg
+            pickups = None
+        return pickups, comment
 
     def bot_command_luck(self, words):
-        result = self.bot_command_luck_choice(words)
+        result = self.bot_command_luck_execute(words)
         choice = result[0]
         comment = result[1]
 
@@ -237,7 +278,7 @@ class BotCommand:
 
         return msg
 
-    def bot_command_luck_choice(self, words):
+    def bot_command_luck_execute(self, words):
         params = words[1:]
         options = params[0:]
         choices = []

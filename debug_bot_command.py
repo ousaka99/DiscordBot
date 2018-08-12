@@ -12,11 +12,60 @@ commandUsers = []
 # </editor-fold>
 
 
-def debug_bot_command_luck():
+def debug_bot_command_tier(words):
+    words.insert(0, 'dummy_cmd')
+    tier_results = []
+    for n in range(0, 1000):
+        result = command.bot_command_tier_execute(words)
+        tier = result[0]
+        tier_results.append(tier)
+
+    c = collections.Counter(tier_results)
+    print(c)
+
+
+def debug_bot_command_ship(words):
+    words.insert(0, 'dummy_cmd')
+    ships_results = []
+    for n in range(0, 1000):
+        result = command.bot_command_ship_execute(words)
+        ships = result[0]
+        ships_results.extend(ships)
+
+    c = collections.Counter(ships_results)
+    print(c)
+
+
+def debug_bot_command_choice(words):
+    words.insert(0, 'dummy_cmd')
+    choice_results = []
+    for n in range(0, 1000):
+        result = command.bot_command_choice_execute(words)
+        choice = result[0]
+        choice_results.append(choice)
+
+    c = collections.Counter(choice_results)
+    print(c)
+
+
+def debug_bot_command_pickup(words):
+    words.insert(0, 'dummy_cmd')
+    pickups_results = []
+    for n in range(0, 1000):
+        result = command.bot_command_pickup_execute(words)
+        pickups = result[0]
+        pickups_results.extend(pickups)
+
+    c = collections.Counter(pickups_results)
+    print(c)
+
+
+def debug_bot_command_luck(words):
+    words.insert(0, 'dummy_cmd')
     luck_results = []
-    for n in range(0, 100):
+    for n in range(0, 1000):
         words = []
-        result = command.bot_command_luck_choice(words)
+        result = command.bot_command_luck_execute(words)
         choice = result[0]
         luck_results.append(choice)
 
@@ -24,4 +73,16 @@ def debug_bot_command_luck():
     print(c)
 
 
-debug_bot_command_luck()
+# debug_bot_command_tier(['1', '10'])
+
+
+# debug_bot_command_ship(['8', '8', '1', 'DD日'])
+
+
+debug_bot_command_choice(['Ａ', 'Ｂ', 'Ｃ', 'Ｄ', 'Ｅ'])
+
+
+# debug_bot_command_pickup(['2', 'Ａ', 'Ｂ', 'Ｃ', 'Ｄ', 'Ｅ'])
+
+
+# debug_bot_command_luck([''])
