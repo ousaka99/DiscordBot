@@ -10,7 +10,7 @@ logging.config.fileConfig("logging.conf")
 logger = logging.getLogger()
 config = bot_config.BotConfig()
 json_data = bot_json_data.BotJsonData(logger, config)
-command = bot_command.BotCommand(logger, config, json_data)
+command = None
 client = discord.Client()
 authors = []
 # </editor-fold>
@@ -23,6 +23,8 @@ async def on_ready():
     print(client.user.id)
     print('-----')
     json_data.bot_json_data()
+    global command
+    command = bot_command.BotCommand(logger, config, json_data)
     print('load json ship data')
     print('-----')
 
@@ -58,9 +60,9 @@ async def on_message(message):
                 break
 
         if can_command is False:
-            msg = f'すみません。よく聞き取れませんでした。続けてもう一度お願いします。\n' + \
-                  f'ボイスチャンネルに入っていただけると聞き洩らしません。\n' + \
-                  f'またテキストチャンネルに書き込むごとに聞きもらしにくくなります。'
+            msg = (f'すみません。よく聞き取れませんでした。続けてもう一度お願いします。\n'
+                   f'ボイスチャンネルに入っていただけると聞き洩らしません。\n'
+                   f'またテキストチャンネルに書き込むごとに聞きもらしにくくなります。')
             await client.send_message(message.channel, msg)
             return
 

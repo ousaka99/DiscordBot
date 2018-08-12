@@ -1,4 +1,3 @@
-import json
 import random
 
 
@@ -7,10 +6,24 @@ class BotCommand:
         self.logger = logger
         self.config = config
         self.json_data = json_data
+        self.commands_comment = dict()
+        self.commands_comment[self.config.command_help] = ""
+        self.commands_comment[self.config.command_tier] = "<半角スペース>最小Tier<半角スペース>最大Tier"
+        self.commands_comment[self.config.command_ship] = ("<半角スペース>最小Tier<半角スペース>最大Tier"
+                                                           "(<半角スペース>リクエスト回数やBB、CA、DD、日米指定など)")
+        self.commands_comment[self.config.command_choice] = "<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)"
+        self.commands_comment[self.config.command_pickup] = "<半角スペース>選択数<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)"
+        kinds = set()
+        for x in self.json_data.luck_data["luck_comment"]:
+            kinds.add(x)
+        self.commands_comment[self.config.command_luck] = "(<半角スペース>" + "、".join(kinds) + ")"
 
     def bot_command_help(self):
         msg = f'使用できるコマンドは\n'
-        msg += '\n'.join(self.config.commands) + '\nです。'
+        comments = []
+        for x in self.config.commands:
+            comments.append(f"{x}{self.commands_comment[x]}")
+        msg += '\n'.join(comments) + '\nです。'
         return msg
 
     def bot_command_tier(self, words):
@@ -24,10 +37,10 @@ class BotCommand:
                 msg = f"{comment}\n"
             msg += f'Tier{tier} がいいと思います。'
         else:
-            msg = f'すみません。よく分かりませんでした。' + \
-                f'```' + \
-                  f'例）{self.config.command_tier}<半角スペース>最小Tier<半角スペース>最大Tier' + \
-                  f'```'
+            msg = (f'すみません。よく分かりませんでした。'
+                   f'```'
+                   f'例）{self.config.command_tier}{self.commands_comment[self.config.command_tier]}'
+                   f'```')
         return msg
 
     def bot_command_tier_execute(self, words):
@@ -71,10 +84,10 @@ class BotCommand:
                 msg = f"{comment}\n"
             msg += '\n'.join(ships) + '\nがいいと思います。'
         else:
-            msg = f'すみません。よく分かりませんでした。' + \
-                f'```' + \
-                f'例）{self.config.command_ship}<半角スペース>最小Tier<半角スペース>最大Tier(<半角スペース>リクエスト回数やCV、BB、CA、DD指定など)' + \
-                f'```'
+            msg = (f'すみません。よく分かりませんでした。'
+                   f'```'
+                   f'例）{self.config.command_ship}{self.commands_comment[self.config.command_ship]}'
+                   f'```')
         return msg
 
     def bot_command_ship_execute(self, words):
@@ -184,10 +197,10 @@ class BotCommand:
                 msg = f"{comment}\n"
             msg += f'{choice} がいいと思います。'
         else:
-            msg = f'すみません。よく分かりませんでした。' + \
-                f'```' + \
-                f'例）{self.config.command_choice}<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
-                f'```'
+            msg = (f'すみません。よく分かりませんでした。'
+                   f'```'
+                   f'例）{self.config.command_choice}{self.commands_comment[self.config.command_choice]}'
+                   f'```')
         return msg
 
     def bot_command_choice_execute(self, words):
@@ -223,10 +236,10 @@ class BotCommand:
                 msg = f"{comment}\n"
             msg += '\n'.join(pickups) + '\nがいいと思います。'
         else:
-            msg = f'すみません。よく分かりませんでした。' + \
-                f'```' + \
-                f'例）{self.config.command_pickup}<半角スペース>選択数<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)' + \
-                f'```'
+            msg = (f'すみません。よく分かりませんでした。'
+                   f'```'
+                   f'例）{self.config.command_pickup}{self.commands_comment[self.config.command_pickup]}'
+                   f'```')
         return msg
 
     def bot_command_pickup_execute(self, words):
