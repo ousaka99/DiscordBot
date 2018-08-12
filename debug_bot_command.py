@@ -16,6 +16,18 @@ json_data.bot_json_data()
 command = bot_command.BotCommand(logger, config, json_data)
 
 
+def debug_bot_command_help(words):
+    words.insert(0, 'dummy_cmd')
+    help_results = []
+    for n in range(0, 1000):
+        result = command.bot_command_help(words)
+        help = result[0]
+        help_results.append(help)
+
+    c = collections.Counter(help_results)
+    print(c)
+
+
 def debug_bot_command_tier(words):
     words.insert(0, 'dummy_cmd')
     tier_results = []
@@ -64,6 +76,18 @@ def debug_bot_command_pickup(words):
     print(c)
 
 
+def debug_bot_command_team(words):
+    words.insert(0, 'dummy_cmd')
+    teams_results = []
+    for n in range(0, 1000):
+        result = command.bot_command_team_execute(words)
+        teams = result[0]
+        teams_results.extend(teams)
+
+    c = collections.Counter(teams_results)
+    print(c)
+
+
 def debug_bot_command_luck(words):
     words.insert(0, 'dummy_cmd')
     luck_results = []
@@ -75,6 +99,9 @@ def debug_bot_command_luck(words):
 
     c = collections.Counter(luck_results)
     print(c)
+
+
+# debug_bot_command_help(['1', '10'])
 
 
 # debug_bot_command_tier(['1', '10'])
@@ -89,4 +116,7 @@ def debug_bot_command_luck(words):
 # debug_bot_command_pickup(['2', 'Ａ', 'Ｂ', 'Ｃ', 'Ｄ', 'Ｅ'])
 
 
-debug_bot_command_luck([''])
+debug_bot_command_team(['2', 'Ａ', 'Ｂ', 'Ｃ', 'Ｄ', 'Ｅ'])
+
+
+# debug_bot_command_luck([''])

@@ -16,10 +16,12 @@ class BotConfig:
         self.command_ship = self.config['default']['command_ship']
         self.command_choice = self.config['default']['command_choice']
         self.command_pickup = self.config['default']['command_pickup']
+        self.command_team = self.config['default']['command_team']
         self.command_luck = self.config['default']['command_luck']
         self.commands = [self.command_help,
                          self.command_tier,
                          self.command_ship,
                          self.command_choice,
                          self.command_pickup,
+                         self.command_team,
                          self.command_luck]

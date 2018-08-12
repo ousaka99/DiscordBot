@@ -7,4 +7,6 @@ command_tier = !tier
 command_ship = !ship
 command_choice = !choice
 command_pickup = !pickup
+command_team = !team
 command_luck = !luck
+command_kuji = !kuji

@@ -25,7 +25,7 @@ async def on_ready():
     json_data.bot_json_data()
     global command
     command = bot_command.BotCommand(logger, config, json_data)
-    print('load json ship data')
+    print('load json data')
     print('-----')
 
 
@@ -76,7 +76,7 @@ async def on_message(message):
     return_message = ""
 
     if message.content.startswith(config.command_help):
-        return_message = command.bot_command_help()
+        return_message = command.bot_command_help(words)
     elif message.content.startswith(config.command_tier):
         return_message = command.bot_command_tier(words)
     elif message.content.startswith(config.command_ship):
@@ -85,6 +85,8 @@ async def on_message(message):
         return_message = command.bot_command_choice(words)
     elif message.content.startswith(config.command_pickup):
         return_message = command.bot_command_pickup(words)
+    elif message.content.startswith(config.command_team):
+        return_message = command.bot_command_team(words)
     elif message.content.startswith(config.command_luck):
         return_message = command.bot_command_luck(words)
 

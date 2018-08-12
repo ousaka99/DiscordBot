@@ -1,4 +1,5 @@
 import random
+from collections import defaultdict
 
 
 class BotCommand:
@@ -10,20 +11,31 @@ class BotCommand:
         self.commands_comment[self.config.command_help] = ""
         self.commands_comment[self.config.command_tier] = " 最小Tier 最大Tier"
         self.commands_comment[self.config.command_ship] = (" 最小Tier 最大Tier "
-                                                           "(リクエスト回数やBB、CA、DD、日米指定など)")
+                                                           "(リクエスト回数やBB、CA、DD、日、米指定など)")
         self.commands_comment[self.config.command_choice] = " 選択肢1 (選択肢2 選択肢3...)"
         self.commands_comment[self.config.command_pickup] = " 選択数 選択肢1 (選択肢2 選択肢3...)"
+        self.commands_comment[self.config.command_team] = " チーム数 選択肢1 選択肢2 (選択肢3 選択肢4...)"
         kinds = set()
         for x in self.json_data.luck_data["luck_comment"]:
             kinds.add(x)
         self.commands_comment[self.config.command_luck] = " (" + "、".join(kinds) + ")"
 
-    def bot_command_help(self):
-        msg = f'使用できるコマンドは\n'
+    def bot_command_help(self, words):
+        params = words[1:]
+        options = params[0:]
+        comment = "使用できるコマンドは"
         comments = []
+
+        for option in options:
+            if option.startswith("-c"):
+                comment = option[2:]
+
         for x in self.config.commands:
             comments.append(f"{x}{self.commands_comment[x]}")
-        msg += '\n'.join(comments) + '\nです。'
+
+        msg = f'{comment}\n'
+        msg += ('\n'.join(comments) + '\nです。'
+                '各コマンドには-cオプションがあり、見出しが設定できます。例)!luck -c明日の運勢は\n')
         return msg
 
     def bot_command_tier(self, words):
@@ -269,6 +281,63 @@ class BotCommand:
         else:
             pickups = None
         return pickups, comment
+
+    def bot_command_team(self, words):
+        result = self.bot_command_team_execute(words)
+        teams = result[0]
+        comment = result[1]
+
+        msg = ''
+        if teams is not None:
+            if len(comment) > 0:
+                msg = f"{comment}"
+
+            for x in teams.keys():
+                team_idx = x + 1
+                msg += f"\nteam{team_idx}が\n"
+                msg += '\n'.join(teams[x])
+
+            msg += '\nでいいと思います。'
+        else:
+            msg = (f'すみません。よく分かりませんでした。'
+                   f'```'
+                   f'例）{self.config.command_team}{self.commands_comment[self.config.command_team]}'
+                   f'```')
+        return msg
+
+    def bot_command_team_execute(self, words):
+        params = words[1:]
+        options = params[1:]
+        team_count = -1
+        choices = []
+        teams = defaultdict(list)
+        comment = "チーム分けは"
+        if len(params) >= 1:
+            try:
+                team_count = int(params[0])
+            except ValueError:
+                # PythonにはTryParseが無いため、実際にキャストしてみる(エラーは握り潰し)
+                pass
+
+        for option in options:
+            if option.startswith("-c"):
+                comment = option[2:]
+            else:
+                choices.append(option)
+
+        self.logger.debug(f'pickup_count={team_count},'
+                          f'choices={choices},'
+                          f'comment={comment}')
+
+        if 0 < team_count <= len(choices):
+            random.shuffle(choices)
+            for i, choice in enumerate(choices):
+                team_idx = i % team_count
+                teams[team_idx].append(choice)
+        else:
+            teams = None
+
+        return teams, comment
 
     def bot_command_luck(self, words):
         result = self.bot_command_luck_execute(words)
