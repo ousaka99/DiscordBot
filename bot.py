@@ -61,7 +61,7 @@ async def on_message(message):
 
         if can_command is False:
             msg = (f'すみません。よく聞き取れませんでした。続けてもう一度お願いします。\n'
-                   f'ボイスチャンネルに入っていただけると聞き洩らしません。\n'
+                   f'ボイスチャンネルに入っていただけると聞きもらしません。\n'
                    f'またテキストチャンネルに書き込むごとに聞きもらしにくくなります。')
             await client.send_message(message.channel, msg)
             return

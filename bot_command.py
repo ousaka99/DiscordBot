@@ -8,15 +8,15 @@ class BotCommand:
         self.json_data = json_data
         self.commands_comment = dict()
         self.commands_comment[self.config.command_help] = ""
-        self.commands_comment[self.config.command_tier] = "<半角スペース>最小Tier<半角スペース>最大Tier"
-        self.commands_comment[self.config.command_ship] = ("<半角スペース>最小Tier<半角スペース>最大Tier"
-                                                           "(<半角スペース>リクエスト回数やBB、CA、DD、日米指定など)")
-        self.commands_comment[self.config.command_choice] = "<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)"
-        self.commands_comment[self.config.command_pickup] = "<半角スペース>選択数<半角スペース>選択肢1(<半角スペース>選択肢2<半角スペース>選択肢3...)"
+        self.commands_comment[self.config.command_tier] = " 最小Tier 最大Tier"
+        self.commands_comment[self.config.command_ship] = (" 最小Tier 最大Tier "
+                                                           "(リクエスト回数やBB、CA、DD、日米指定など)")
+        self.commands_comment[self.config.command_choice] = " 選択肢1 (選択肢2 選択肢3...)"
+        self.commands_comment[self.config.command_pickup] = " 選択数 選択肢1 (選択肢2 選択肢3...)"
         kinds = set()
         for x in self.json_data.luck_data["luck_comment"]:
             kinds.add(x)
-        self.commands_comment[self.config.command_luck] = "(<半角スペース>" + "、".join(kinds) + ")"
+        self.commands_comment[self.config.command_luck] = " (" + "、".join(kinds) + ")"
 
     def bot_command_help(self):
         msg = f'使用できるコマンドは\n'
