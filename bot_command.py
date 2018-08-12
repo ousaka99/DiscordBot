@@ -3,10 +3,10 @@ import random
 
 
 class BotCommand:
-    def __init__(self, logger, config):
+    def __init__(self, logger, config, json_data):
         self.logger = logger
         self.config = config
-        pass
+        self.json_data = json_data
 
     def bot_command_help(self):
         msg = f'使用できるコマンドは\n'
@@ -149,30 +149,21 @@ class BotCommand:
             msg = f'すみません。欲張りすぎです。もうちょっと少なくしてください。'
             return msg
         elif (1 <= min_tier <= 10) and (1 <= max_tier <= 10) and min_tier <= max_tier and 0 < request_count:
-            table_data = {}
-            try:
-                with open('./ship_table.json', 'r', encoding="utf-8_sig") as fc:
-                    table_data = json.load(fc)
-            except json.JSONDecodeError as e:
-                print('JSONDecodeError: ', e)
-                exit(e)
-            except FileNotFoundError as e:
-                print('FileNotFoundError: ', e)
-                exit(e)
+            ship_data = self.json_data.ship_data
 
-            target_table_data = [x for x in table_data['ships'] if min_tier <= int(x['tier']) <= max_tier]
+            target_ship_data = [x for x in ship_data['ships'] if min_tier <= int(x['tier']) <= max_tier]
             if len(kinds) > 0:
-                target_table_data = [x for x in target_table_data if x['kind'] in kinds]
+                target_ship_data = [x for x in target_ship_data if x['kind'] in kinds]
             if len(nations) > 0:
-                target_table_data = [x for x in target_table_data if x['nation'] in nations]
+                target_ship_data = [x for x in target_ship_data if x['nation'] in nations]
 
-            if len(target_table_data) < 1:
+            if len(target_ship_data) < 1:
                 ships = []
             else:
                 ships = []
-                if len(target_table_data) < request_count:
-                    request_count = len(target_table_data)
-                samples = random.sample(target_table_data, request_count)
+                if len(target_ship_data) < request_count:
+                    request_count = len(target_ship_data)
+                samples = random.sample(target_ship_data, request_count)
                 for x in samples:
                     name = x['name']
                     tier = x['tier']
@@ -282,41 +273,27 @@ class BotCommand:
         params = words[1:]
         options = params[0:]
         choices = []
-        kind = ""
+        kinds = set()
+        kind = "くじ"
         comment = ""
+
+        for x in self.json_data.luck_data["luck_comment"]:
+            kinds.add(x)
 
         for option in options:
             if option.startswith("-c"):
                 comment = option[2:]
-            elif option == "色":
-                kind = "色"
+            elif option in kinds:
+                kind = option
 
-        if kind == "色":
-            patterns = {'赤': 1,
-                        'ピンク': 1,
-                        '黄色': 1,
-                        'オレンジ': 1,
-                        '緑': 1,
-                        '青': 1,
-                        '紫': 1,
-                        '茶色': 1,
-                        '白': 1,
-                        '黒': 1}
-            if comment == "":
-                comment = "今日のラッキーカラーは"
-        else:
-            patterns = {'大吉': 30,
-                        '吉': 18,
-                        '中吉': 14,
-                        '小吉': 14,
-                        '末吉': 16,
-                        '凶': 8}
-            if comment == "":
-                comment = "今日の運勢は"
+        if comment == "":
+            comment = self.json_data.luck_data["luck_comment"][kind]
 
-        for key in patterns.keys():
-            for n in range(0, int(patterns[key])):
-                choices.append(key)
+        items = self.json_data.luck_data["luck_items"][kind]
+
+        for item in items:
+            for n in range(0, int(item[1])):
+                choices.append(item[0])
 
         self.logger.debug(f'choices={choices},'
                           f'comment={comment}')

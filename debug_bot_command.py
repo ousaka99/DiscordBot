@@ -1,5 +1,6 @@
 import bot_command
 import bot_config
+import bot_json_data
 import logging.config
 import collections
 
@@ -7,9 +8,12 @@ import collections
 logging.config.fileConfig("logging.conf")
 logger = logging.getLogger()
 config = bot_config.BotConfig()
-command = bot_command.BotCommand(logger, config)
+json_data = bot_json_data.BotJsonData(logger, config)
+command = bot_command.BotCommand(logger, config, json_data)
 commandUsers = []
 # </editor-fold>
+
+json_data.bot_json_data()
 
 
 def debug_bot_command_tier(words):
@@ -79,10 +83,10 @@ def debug_bot_command_luck(words):
 # debug_bot_command_ship(['8', '8', '1', 'DD日'])
 
 
-debug_bot_command_choice(['Ａ', 'Ｂ', 'Ｃ', 'Ｄ', 'Ｅ'])
+# debug_bot_command_choice(['Ａ', 'Ｂ', 'Ｃ', 'Ｄ', 'Ｅ'])
 
 
 # debug_bot_command_pickup(['2', 'Ａ', 'Ｂ', 'Ｃ', 'Ｄ', 'Ｅ'])
 
 
-# debug_bot_command_luck([''])
+debug_bot_command_luck([''])

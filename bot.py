@@ -1,5 +1,6 @@
 import bot_command
 import bot_config
+import bot_json_data
 import discord
 import logging.config
 import random
@@ -8,7 +9,8 @@ import random
 logging.config.fileConfig("logging.conf")
 logger = logging.getLogger()
 config = bot_config.BotConfig()
-command = bot_command.BotCommand(logger, config)
+json_data = bot_json_data.BotJsonData(logger, config)
+command = bot_command.BotCommand(logger, config, json_data)
 client = discord.Client()
 authors = []
 # </editor-fold>
@@ -19,6 +21,9 @@ async def on_ready():
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
+    print('-----')
+    json_data.bot_json_data()
+    print('load json ship data')
     print('-----')
 
 
