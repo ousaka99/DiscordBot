@@ -30,7 +30,7 @@ class BotCommand:
             if option.startswith("-c"):
                 comment = option[2:]
 
-        for x in self.config.commands:
+        for x in self.config.release_commands:
             comments.append(f"{x}{self.commands_comment[x]}")
 
         msg = f'{comment}\n'
@@ -294,7 +294,7 @@ class BotCommand:
 
             for x in teams.keys():
                 team_idx = x + 1
-                msg += f"\nteam{team_idx}が\n"
+                msg += f"\n■Team{team_idx}が\n"
                 msg += '\n'.join(teams[x])
 
             msg += '\nでいいと思います。'
@@ -380,4 +380,25 @@ class BotCommand:
         self.logger.debug(f'choices={choices},'
                           f'comment={comment}')
         choice = random.choice(choices)
+        return choice, comment
+
+    def bot_command_kuji(self, words):
+        result = self.bot_command_kuji_execute(words)
+        choice = result[0]
+        comment = result[1]
+
+        msg = ''
+        if len(comment) > 0:
+            msg = f"{comment}\n"
+        msg += f'{choice} です。'
+
+        return msg
+
+    def bot_command_kuji_execute(self, words):
+        params = words[1:]
+        choices = []
+        comment = ""
+
+        # TODO 未実装
+        choice = ""
         return choice, comment

@@ -10,3 +10,5 @@ command_pickup = !pickup
 command_team = !team
 command_luck = !luck
 command_kuji = !kuji
+command_enter = !enter
+command_leave = !leave

@@ -89,11 +89,20 @@ async def on_message(message):
         return_message = command.bot_command_team(words)
     elif message.content.startswith(config.command_luck):
         return_message = command.bot_command_luck(words)
+    elif message.content.startswith(config.command_kuji):
+        return_message = command.bot_command_kuji(words)
+    elif message.content.startswith(config.command_enter):
+        # TODO 未実装
+        pass
+    elif message.content.startswith(config.command_leave):
+        # TODO 未実装
+        pass
 
-    return_message += f'from {voice_channel_name}'
-    if len(return_message) > 2000:
-        return_message = f'すみません。少し長すぎます。短くしてください。'
+    if words[0] in config.release_commands:
+        return_message += f'from {voice_channel_name}'
+        if len(return_message) > 2000:
+            return_message = f'すみません。少し長すぎます。短くしてください。'
 
-    await client.send_message(message.channel, return_message)
+        await client.send_message(message.channel, return_message)
 
 client.run(config.bot_token)
