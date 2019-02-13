@@ -21,7 +21,7 @@ qualname=compiler.parser
 class=handlers.TimedRotatingFileHandler
 level=INFO
 formatter=basic
-args=('DiscordBot.log', 'D', 1, 10)
+args=('DiscordBot.log', 'D', 2, 10)
 
 [handler_hand02]
 class=StreamHandler

@@ -35,12 +35,6 @@ async def on_message(message):
         # 自分自身の発言や、登録されていないチャンネルの発言は無視する。
         return
 
-    global authors
-    if message.channel.id not in config.special_channel_ids:
-        if len(authors) >= 100:
-            authors = authors[1: 100]
-        authors.append(str(message.author))
-
     words = message.content.split()
     if words[0] not in config.commands:
         # 登録されているコマンド以外は無視する。
@@ -48,27 +42,7 @@ async def on_message(message):
 
     logger.info(message.content)
 
-    if (message.channel.id not in config.special_channel_ids) and (message.author.voice_channel is None):
-        my_authors = [x for x in authors if str(message.author) == x]
-        can_command = False
-        for x in range(0, len(my_authors)):
-            if 0 == random.choice(range(0, 2)):
-                # 50%の確率で実行不可
-                continue
-            else:
-                can_command = True
-                break
-
-        if can_command is False:
-            msg = (f'すみません。よく聞き取れませんでした。続けてもう一度お願いします。\n'
-                   f'ボイスチャンネルに入っていただけると聞きもらしません。\n'
-                   f'またテキストチャンネルに書き込むごとに聞きもらしにくくなります。')
-            await client.send_message(message.channel, msg)
-            return
-
-    if (message.channel.id not in config.special_channel_ids) and (message.author.voice_channel is None):
-        voice_channel_name = 'ボイスチャンネル未接続(聞き取れないことがあります)'
-    elif message.author.voice_channel is None:
+    if message.author.voice_channel is None:
         voice_channel_name = 'None'
     else:
         voice_channel_name = message.author.voice_channel.name
@@ -105,4 +79,10 @@ async def on_message(message):
 
         await client.send_message(message.channel, return_message)
 
-client.run(config.bot_token)
+try:
+    client.run(config.bot_token)
+except Exception as e:
+    logger.error(f'client.run Error:{e}')
+    exit(e)
+finally:
+    logger.info(f'client.run end')
