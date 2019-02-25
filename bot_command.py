@@ -8,13 +8,16 @@ class BotCommand:
         self.config = config
         self.json_data = json_data
         self.commands_comment = dict()
-        self.commands_comment[self.config.command_help] = ""
-        self.commands_comment[self.config.command_tier] = " 最小Tier 最大Tier"
-        self.commands_comment[self.config.command_ship] = (" 最小Tier 最大Tier "
-                                                           "(リクエスト回数やBB、CA、DD、日、米指定など)")
-        self.commands_comment[self.config.command_choice] = " 選択肢1 (選択肢2 選択肢3...)"
-        self.commands_comment[self.config.command_pickup] = " 選択数 選択肢1 (選択肢2 選択肢3...)"
-        self.commands_comment[self.config.command_team] = " チーム数 選択肢1 選択肢2 (選択肢3 選択肢4...)"
+        self.commands_comment[self.config.command_help] = ''
+        self.commands_comment[self.config.command_tier] = ' 最小Tier 最大Tier'
+        self.commands_comment[self.config.command_ship] = (' 最小Tier 最大Tier '
+                                                           '(リクエスト回数やBB、CA、DD、日、米指定など)')
+        self.commands_comment[self.config.command_choice] = ' 選択肢1 (選択肢2 選択肢3...)'
+        self.commands_comment[self.config.command_pickup] = ' 選択数 選択肢1 (選択肢2 選択肢3...)'
+        self.commands_comment[self.config.command_team] = ' チーム数 選択肢1 選択肢2 (選択肢3 選択肢4...)'
+        self.commands_comment_recruit_open = '- 使用例： ぶんぼ 対空艦@2'
+        self.commands_comment_recruit_close = '- 使用例： しめきり'
+        self.commands_comment_recruit_regist = '- 使用例： つうち(現在の通知設定を確認)/ つうち ON / つうち OFF'
         kinds = set()
         for x in self.json_data.luck_data["luck_comment"]:
             kinds.add(x)
@@ -23,7 +26,7 @@ class BotCommand:
     def bot_command_help(self, words):
         params = words[1:]
         options = params[0:]
-        comment = "使用できるコマンドは"
+        comment = "使用できるコマンドは以下です。"
         comments = []
 
         for option in options:
@@ -34,8 +37,15 @@ class BotCommand:
             comments.append(f"{x}{self.commands_comment[x]}")
 
         msg = f'{comment}\n'
-        msg += ('\n'.join(comments) + '\nです。'
-                '各コマンドには-cオプションがあり、見出しが設定できます。例)!luck -c明日の運勢は\n')
+        msg += ('\n'.join(comments) + '\n'
+                '上記コマンドには-cオプションがあり、見出しが設定できます。\n例) !luck -c明日の運勢は\n\n')
+
+        msg += 'その他に、以下のコマンドが使えます。\n'
+        
+        msg += '/'.join(self.config.command_recruit_open) + '\n' + self.commands_comment_recruit_open + '\n'
+        msg += '/'.join(self.config.command_recruit_close) + '\n' + self.commands_comment_recruit_close + '\n'
+        msg += '/'.join(self.config.command_recruit_regist) + '\n' + self.commands_comment_recruit_regist + '\n'
+
         return msg
 
     def bot_command_tier(self, words):
@@ -190,8 +200,8 @@ class BotCommand:
                     request_count = len(target_ship_data)
                 samples = random.sample(target_ship_data, request_count)
                 for x in samples:
-                    name = x['name']
-                    tier = x['tier']
+                    name = samples[x]['name']
+                    tier = samples[x]['tier']
                     ships.append(f'{name}(Tier{tier})')
         else:
             ships = None
@@ -374,8 +384,7 @@ class BotCommand:
         items = self.json_data.luck_data["luck_items"][kind]
 
         for item in items:
-            for n in range(0, int(item[1])):
-                choices.append(item[0])
+            choices.append(item[0]) in range(0, int(item[1]))
 
         self.logger.debug(f'choices={choices},'
                           f'comment={comment}')
@@ -395,8 +404,8 @@ class BotCommand:
         return msg
 
     def bot_command_kuji_execute(self, words):
-        params = words[1:]
-        choices = []
+        # params = words[1:]
+        # choices = []
         comment = ""
 
         # TODO 未実装
