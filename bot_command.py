@@ -33,7 +33,7 @@ class BotCommand:
             if option.startswith("-c"):
                 comment = option[2:]
 
-        for x in self.config.release_commands:
+        for x in self.config.command_exact_match:
             comments.append(f"{x}{self.commands_comment[x]}")
 
         msg = f'{comment}\n'

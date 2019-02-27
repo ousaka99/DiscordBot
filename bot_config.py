@@ -28,17 +28,17 @@ class BotConfig:
         self.command_recruit_open = self.config['default']['command_recruit_open'].split()
         self.command_recruit_close = self.config['default']['command_recruit_close'].split()
         self.command_recruit_regist = self.config['default']['command_recruit_regist'].split()
-        self.release_commands = [self.command_help,
-                                 self.command_tier,
-                                 self.command_ship,
-                                 self.command_choice,
-                                 self.command_pickup,
-                                 self.command_team,
-                                 self.command_luck]
-        self.commands = list(self.release_commands)
-        self.commands.append(self.command_kuji)
-        self.commands.append(self.command_enter)
-        self.commands.append(self.command_leave)
-        self.commands.extend(self.command_recruit_open)
-        self.commands.extend(self.command_recruit_close)
-        self.commands.extend(self.command_recruit_regist)
+        self.command_exact_match = [self.command_help,
+                                    self.command_tier,
+                                    self.command_ship,
+                                    self.command_choice,
+                                    self.command_pickup,
+                                    self.command_team,
+                                    self.command_luck]
+        self.command_forward_match = []
+        self.command_forward_match.extend(self.command_recruit_open)
+        self.command_forward_match.extend(self.command_recruit_close)
+        self.command_forward_match.extend(self.command_recruit_regist)
+        self.release_commands = []
+        self.release_commands.extend(self.command_exact_match)
+        self.release_commands.extend(self.command_forward_match)
