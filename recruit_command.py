@@ -5,7 +5,7 @@ class RecruitCommand:
         self.logger = logger
         self.config = config
 
-    def bot_command_recruit_open(self, words, message):
+    def bot_command_recruit_open(self, words, message, display_name):
         params = words[1:]
         options = ''
         if len(params) > 0:
@@ -13,23 +13,23 @@ class RecruitCommand:
         else:
             options = ''
 
-        msg = f'<@&{self.config.recruit_role_id}> {message.author.name} さんが分艦隊募集しています。{options}'
+        msg = f'<@&{self.config.recruit_role_id}> {display_name} さんが分艦隊募集しています。{options}'
 
         self.logger.debug(f'role_id={self.config.recruit_role_id} '
-                          f'author={message.author.name} '
+                          f'author={display_name} '
                           f'option={options}')
         self.logger.debug(f'comment={msg}')
 
         return msg
 
-    def bot_command_recruit_close(self, words, message):
-        msg = f'{message.author.name} さんの分艦隊募集が締め切られました。'
+    def bot_command_recruit_close(self, words, message, display_name):
+        msg = f'{display_name} さんの分艦隊募集が締め切られました。'
  
         self.logger.debug(f'comment={msg}')
 
         return msg
 
-    def bot_command_recruit_regist(self, words, message):
+    def bot_command_recruit_regist(self, words, message, display_name):
         params = words[1:]
         options = ''
         if len(params) > 0:
@@ -46,13 +46,13 @@ class RecruitCommand:
                 if (role.id == self.config.recruit_role_id):
                     role_flag = 'ON'
 
-            msg = f'{message.author.name} さんの分艦隊募集通知設定は {role_flag} です。\n使い方： つうち ON / OFF'
+            msg = f'{display_name} さんの分艦隊募集通知設定は {role_flag} です。\n使い方： つうち ON / OFF'
             flag = ''
         elif options == 'ON' or options == 'on':
-            msg = f'{message.author.name} さんの分艦隊募集通知設定を ON にしました。'
+            msg = f'{display_name} さんの分艦隊募集通知設定を ON にしました。'
             flag = 'ON'
         elif options == 'OFF' or options == 'off':
-            msg = f'{message.author.name} さんの分艦隊募集通知設定を OFF にしました。'
+            msg = f'{display_name} さんの分艦隊募集通知設定を OFF にしました。'
             flag = 'OFF'
         else:
             pass
