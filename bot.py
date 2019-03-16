@@ -40,8 +40,14 @@ async def on_message(message):
         # 登録されていないチャンネルの発言は無視する。
         return
 
-    words = message.content.split()
-    if (words[0] not in config.commands):
+    translated_message = message.content
+    for s in config.command_forward_match:
+        if translated_message.startswith(s):
+            translated_message = s + " " + translated_message[len(s):]
+            break
+
+    words = translated_message.split()
+    if (words[0] not in config.release_commands):
         # 登録されているコマンド以外は無視する。
         return
 

@@ -13,17 +13,17 @@ class RecruitCommand:
         else:
             options = ''
 
-        msg = f'<@&{self.config.recruit_role_id}> {message.author.name} さんが分艦隊募集しています。{options}'
+        msg = f'<@&{self.config.recruit_role_id}> {message.author.nick} さんが分艦隊募集しています。{options}'
 
         self.logger.debug(f'role_id={self.config.recruit_role_id} '
-                          f'author={message.author.name} '
+                          f'author={message.author.nick} '
                           f'option={options}')
         self.logger.debug(f'comment={msg}')
 
         return msg
 
     def bot_command_recruit_close(self, words, message):
-        msg = f'{message.author.name} さんの分艦隊募集が締め切られました。'
+        msg = f'{message.author.nick} さんの分艦隊募集が締め切られました。'
  
         self.logger.debug(f'comment={msg}')
 
@@ -46,13 +46,13 @@ class RecruitCommand:
                 if (role.id == self.config.recruit_role_id):
                     role_flag = 'ON'
 
-            msg = f'{message.author.name} さんの分艦隊募集通知設定は {role_flag} です。\n使い方： つうち ON / OFF'
+            msg = f'{message.author.nick} さんの分艦隊募集通知設定は {role_flag} です。\n使い方： つうち ON / OFF'
             flag = ''
         elif options == 'ON' or options == 'on':
-            msg = f'{message.author.name} さんの分艦隊募集通知設定を ON にしました。'
+            msg = f'{message.author.nick} さんの分艦隊募集通知設定を ON にしました。'
             flag = 'ON'
         elif options == 'OFF' or options == 'off':
-            msg = f'{message.author.name} さんの分艦隊募集通知設定を OFF にしました。'
+            msg = f'{message.author.nick} さんの分艦隊募集通知設定を OFF にしました。'
             flag = 'OFF'
         else:
             pass
