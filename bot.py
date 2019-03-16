@@ -60,6 +60,12 @@ async def on_message(message):
 
     return_message = ''
 
+    # 表示名称の取得
+    if message.author.nick is None:
+        display_name = message.author.name
+    else:
+        display_name = message.author.nick
+
     if message.content.startswith(config.command_help):
         return_message = command.bot_command_help(words)
     elif message.content.startswith(config.command_tier):
@@ -84,14 +90,14 @@ async def on_message(message):
         pass
     elif any(map(message.content.startswith, config.command_recruit_open)):
         if (message.channel.id in config.recruit_channel_ids):
-            return_message = recruit.bot_command_recruit_open(words, message)
+            return_message = recruit.bot_command_recruit_open(words, message, display_name)
     elif any(map(message.content.startswith, config.command_recruit_close)):
         if (message.channel.id in config.recruit_channel_ids):
-            return_message = recruit.bot_command_recruit_close(words, message)
+            return_message = recruit.bot_command_recruit_close(words, message, display_name)
     elif any(map(message.content.startswith, config.command_recruit_regist)):
         if (message.channel.id in config.recruit_channel_ids):
             return_data = []
-            return_data = recruit.bot_command_recruit_regist(words, message)
+            return_data = recruit.bot_command_recruit_regist(words, message, display_name)
             return_message = return_data[0]
             return_flag = return_data[1]
             notify_role = discord.utils.get(message.author.server.roles, id=config.recruit_role_id)
