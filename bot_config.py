@@ -35,10 +35,10 @@ class BotConfig:
                                     self.command_pickup,
                                     self.command_team,
                                     self.command_luck]
-        self.command_forward_match = []
-        self.command_forward_match.extend(self.command_recruit_open)
-        self.command_forward_match.extend(self.command_recruit_close)
-        self.command_forward_match.extend(self.command_recruit_regist)
+        self.command_contain_match = []
+        self.command_contain_match.extend(self.command_recruit_open)
+        self.command_contain_match.extend(self.command_recruit_close)
+        self.command_contain_match.extend(self.command_recruit_regist)
         self.release_commands = []
         self.release_commands.extend(self.command_exact_match)
-        self.release_commands.extend(self.command_forward_match)
+        self.release_commands.extend(self.command_contain_match)

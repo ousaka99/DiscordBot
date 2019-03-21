@@ -41,9 +41,9 @@ async def on_message(message):
         return
 
     translated_message = message.content
-    for s in config.command_forward_match:
-        if translated_message.startswith(s):
-            translated_message = s + " " + translated_message[len(s):]
+    for s in config.command_contain_match:
+        if s in translated_message:
+            translated_message = s + " " + translated_message
             break
 
     words = translated_message.split()
@@ -66,35 +66,35 @@ async def on_message(message):
     else:
         display_name = message.author.nick
 
-    if message.content.startswith(config.command_help):
+    if translated_message.startswith(config.command_help):
         return_message = command.bot_command_help(words)
-    elif message.content.startswith(config.command_tier):
+    elif translated_message.startswith(config.command_tier):
         return_message = command.bot_command_tier(words)
-    elif message.content.startswith(config.command_ship):
+    elif translated_message.startswith(config.command_ship):
         return_message = command.bot_command_ship(words)
-    elif message.content.startswith(config.command_choice):
+    elif translated_message.startswith(config.command_choice):
         return_message = command.bot_command_choice(words)
-    elif message.content.startswith(config.command_pickup):
+    elif translated_message.startswith(config.command_pickup):
         return_message = command.bot_command_pickup(words)
-    elif message.content.startswith(config.command_team):
+    elif translated_message.startswith(config.command_team):
         return_message = command.bot_command_team(words)
-    elif message.content.startswith(config.command_luck):
+    elif translated_message.startswith(config.command_luck):
         return_message = command.bot_command_luck(words)
-    elif message.content.startswith(config.command_kuji):
+    elif translated_message.startswith(config.command_kuji):
         return_message = command.bot_command_kuji(words)
-    elif message.content.startswith(config.command_enter):
+    elif translated_message.startswith(config.command_enter):
         # TODO 未実装
         pass
-    elif message.content.startswith(config.command_leave):
+    elif translated_message.startswith(config.command_leave):
         # TODO 未実装
         pass
-    elif any(map(message.content.startswith, config.command_recruit_open)):
+    elif any(map(translated_message.startswith, config.command_recruit_open)):
         if (message.channel.id in config.recruit_channel_ids):
             return_message = recruit.bot_command_recruit_open(words, message, display_name)
-    elif any(map(message.content.startswith, config.command_recruit_close)):
+    elif any(map(translated_message.startswith, config.command_recruit_close)):
         if (message.channel.id in config.recruit_channel_ids):
             return_message = recruit.bot_command_recruit_close(words, message, display_name)
-    elif any(map(message.content.startswith, config.command_recruit_regist)):
+    elif any(map(translated_message.startswith, config.command_recruit_regist)):
         if (message.channel.id in config.recruit_channel_ids):
             return_data = []
             return_data = recruit.bot_command_recruit_regist(words, message, display_name)

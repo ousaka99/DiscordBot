@@ -32,10 +32,10 @@ class RecruitCommand:
     def bot_command_recruit_regist(self, words, message, display_name):
         params = words[1:]
         options = ''
-        if len(params) > 0:
-            options = params[0]
-        else:
-            options = ''
+        if 'ON' in message.content.upper():
+            options = 'ON'
+        elif 'OFF' in message.content.upper():
+            options = 'OFF'
         msg = ''
         flag = ''
 
@@ -48,10 +48,10 @@ class RecruitCommand:
 
             msg = f'{display_name} さんの分艦隊募集通知設定は {role_flag} です。\n使い方： つうち ON / OFF'
             flag = ''
-        elif options == 'ON' or options == 'on':
+        elif options == 'ON':
             msg = f'{display_name} さんの分艦隊募集通知設定を ON にしました。'
             flag = 'ON'
-        elif options == 'OFF' or options == 'off':
+        elif options == 'OFF':
             msg = f'{display_name} さんの分艦隊募集通知設定を OFF にしました。'
             flag = 'OFF'
         else:
