@@ -4,6 +4,7 @@ import bot_json_data
 import discord
 import logging.config
 import recruit_command
+from retry import retry
 
 # <editor-fold desc="setting">
 logging.config.fileConfig("logging.conf")
@@ -115,10 +116,10 @@ async def on_message(message):
 
     await client.send_message(message.channel, return_message)
 
-try:
+@retry(tries=10, delay=30, logger=logger)
+def make_trouble():
     client.run(config.bot_token)
-except Exception as e:
-    logger.error(f'client.run Error:{e}')
-    exit(e)
-finally:
-    logger.info(f'client.run end')
+
+make_trouble()
+
+logger.info(f'client.run end')
